@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  EDIT BEFORE USE:
+    - <Label>        : give each engagement a unique reverse-DNS label
+    - ProgramArguments: paths to python3 and your local poll_dmvs.py
+    - WorkingDirectory: project root
+    - StandardOut/ErrorPath: where to write launchd log
+  Copy this file to ~/Library/LaunchAgents/<your-label>.plist and load with:
+    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/<your-label>.plist
+  Unload with:
+    launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/<your-label>.plist
+  On Linux, use cron instead (see polling/README.md).
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.yourcompany.dmvpoll</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/homebrew/bin/python3</string>
+        <string>/path/to/your/project/polling/poll_dmvs.py</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/path/to/your/project</string>
+
+    <key>StartInterval</key>
+    <integer>900</integer>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/path/to/your/project/dmv-polling/polling.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/path/to/your/project/dmv-polling/polling.log</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+    </dict>
+</dict>
+</plist>

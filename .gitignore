@@ -1,0 +1,17 @@
+# Polling data (local only)
+polling/polling.db
+polling/*.db
+
+# Output files
+reports/
+procedures/
+fixes/
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
