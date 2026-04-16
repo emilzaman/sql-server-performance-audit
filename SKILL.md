@@ -89,6 +89,7 @@ Core baseline scripts (in recommended order):
 | 12 | `12-active-queries.sql` | Currently running requests |
 | 13 | `13-tempdb-usage.sql` | TempDB file sizes and space used |
 | 14 | `14-top-adhoc-queries.sql` | Raw ad-hoc SQL by usage |
+| 15 | `15-server-health.sql` | Backup age, auto-close/shrink, compat level, sysadmin count, linked servers |
 
 Run with `sqlcmd` — see Phase 3 for recommended invocation. Save each
 output to a separate text or CSV file in the user's project under
@@ -100,6 +101,11 @@ Also run the one-offs:
 - `queries/memory-clerks.sql` — if buffer pool looks starved
 - `queries/table-sizes.sql` — risk-weighting for later index changes
 - `queries/unused-indexes.sql` — if server uptime >= 30 days
+- `queries/duplicate-indexes.sql` — exact and prefix duplicates (drop candidates)
+- `queries/index-fragmentation.sql` — fragmentation + write amplification per index
+- `queries/deadlock-history.sql` — deadlock graphs from System Health XE (always-on, no setup)
+- `queries/active-transactions.sql` — open transactions with duration (run during blocking events)
+- `queries/memory-grants.sql` — in-flight query memory grants (run during freeze/high-memory events)
 
 ### Phase 3 — Continuous polling (optional but recommended)
 
@@ -272,7 +278,8 @@ sql-server-performance-audit/
 │   ├── 10-exec-plans.sql
 │   ├── 12-active-queries.sql
 │   ├── 13-tempdb-usage.sql
-│   └── 14-top-adhoc-queries.sql
+│   ├── 14-top-adhoc-queries.sql
+│   └── 15-server-health.sql      ← backup age, auto-close/shrink, compat level, sysadmin count, etc.
 ├── queries/                    On-demand analysis queries
 │   ├── plan-cache-composition.sql
 │   ├── plan-cache-top-offenders.sql
@@ -283,7 +290,12 @@ sql-server-performance-audit/
 │   ├── wait-stats-delta.sql
 │   ├── memory-clerks.sql
 │   ├── table-sizes.sql
-│   └── index-usage-verify.sql
+│   ├── index-usage-verify.sql
+│   ├── index-fragmentation.sql   ← avg fragmentation %, write amplification, REBUILD/REORGANIZE advisory
+│   ├── duplicate-indexes.sql     ← exact duplicates + prefix duplicates with drop advisory
+│   ├── memory-grants.sql         ← per-query memory grants in flight (diagnose freeze events)
+│   ├── active-transactions.sql   ← open transactions by session with duration and lock context
+│   └── deadlock-history.sql      ← deadlock graphs from System Health XE (no setup required)
 ├── polling/                    Continuous 15-min DMV polling
 │   ├── poll_dmvs.py
 │   ├── poll_dmvs_wrapper.sh
