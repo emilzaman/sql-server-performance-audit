@@ -35,10 +35,11 @@
   Adapted as standalone diagnostic query.
 */
 
-USE [master];     -- change to target database
-GO
+-- Run with: sqlcmd -d <target_database>
+-- (no USE statement — relies on -d flag so DB_ID() returns the right database)
 
 SET NOCOUNT ON;
+SET QUOTED_IDENTIFIER ON;
 SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
 
 DECLARE @db_id INT = DB_ID();
