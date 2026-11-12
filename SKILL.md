@@ -57,7 +57,9 @@ Confirm with the user:
 - What read-only access is available (ideally a dedicated monitor login
   with `VIEW SERVER STATE`, `VIEW ANY DEFINITION`, `VIEW DATABASE STATE`)
 - The engagement duration (one-off snapshot vs multi-day monitoring)
-- The expected output format (PDF report? Markdown? Raw data + analysis?)
+- The output format. Default: Emil's branded PDF (styled HTML rendered with
+  weasyprint, checked visually before sending); ask only whether he also
+  wants the raw data files
 - Whether the user wants fix scripts generated or only the report
 
 If the user doesn't have a monitor login yet, provide the GRANT statements
@@ -86,12 +88,14 @@ Core baseline scripts (in recommended order):
 | 09b | `09b-db-settings.sql` | Per-database settings (parameterization, compat level, etc.) |
 | 09c | `09c-server-info.sql` | `SELECT @@VERSION`, hardware info |
 | 10 | `10-exec-plans.sql` | Plan cache composition |
+| 11 | `11-extract-procedures.sql` | Full source of one object; used per finding in Phase 5, not in the baseline run |
 | 12 | `12-active-queries.sql` | Currently running requests |
 | 13 | `13-tempdb-usage.sql` | TempDB file sizes and space used |
 | 14 | `14-top-adhoc-queries.sql` | Raw ad-hoc SQL by usage |
 | 15 | `15-server-health.sql` | Backup age, auto-close/shrink, compat level, sysadmin count, linked servers |
 
-Run with `sqlcmd` — see Phase 3 for recommended invocation. Save each
+Run each with `sqlcmd -S <server> -U <user> -d <database> -i scripts/NN-name.sql -o reports/dmv-snapshots/NN-name.txt`
+(add `-y 0` for scripts returning long text such as plans; README "Quick start" has examples). Save each
 output to a separate text or CSV file in the user's project under
 `reports/dmv-snapshots/`.
 
@@ -142,8 +146,9 @@ report section? If yes, schedule a deep dive (Phase 5).
 
 For each procedure, config issue, or contention pattern flagged in Phase 4:
 
-1. **Extract the object** — procedure source via `11-extract-procedures.sql`
-   (see the extract_procedures.py helper) or `sp_helptext`. Save to
+1. **Extract the object** — procedure source via `scripts/11-extract-procedures.sql`
+   (one object per run: `sqlcmd ... -d <database> -y 0 -h -1 -v ObjectName="dbo.ProcName"
+   -i scripts/11-extract-procedures.sql -o procedures/ProcName.sql`) or `sp_helptext`. Save to
    `procedures/<ProcName>.sql` in the user's project.
 2. **Read it.** Do not suggest changes to code you have not read.
 3. **Identify the anti-pattern(s)** — see `references/anti-patterns.md`

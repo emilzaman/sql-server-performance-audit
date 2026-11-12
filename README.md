@@ -29,7 +29,7 @@ sqlcmd -S <server> -U <user> -i scripts/05-wait-stats.sql        -o reports/05-w
 sqlcmd -S <server> -U <user> -i scripts/06-missing-indexes.sql   -o reports/06-missing-indexes.txt
 ```
 
-Run all 16 scripts in `scripts/` order. Save each output to `reports/dmv-snapshots/`.
+Run the numbered scripts in `scripts/` order, except `11-extract-procedures.sql`, which extracts one object at a time during deep dives. Save each output to `reports/dmv-snapshots/`.
 
 ### 2. Set up continuous polling (optional)
 
